@@ -8,13 +8,10 @@ export async function generateMetadata({ params }) {
   try {
     const res = await axios.get(`http://localhost:5000/api/products/${params.id}`);
     const product = res.data;
-    
-    // Basic metadata for SEO
+
     return {
       title: `${product.name} | Product Shop`,
       description: product.description || `Details about ${product.name}`,
-      
-      // Open Graph metadata for social sharing (including WhatsApp)
       openGraph: {
         title: product.name,
         description: product.description || `Details about ${product.name}`,
@@ -29,22 +26,16 @@ export async function generateMetadata({ params }) {
         locale: 'en_US',
         type: 'website',
         siteName: 'Product Shop',
-        url: `https://your-domain.com/product/${params.id}`,
+        url: `https://localhost:5000/product/${params.id}`,
       },
-      
-      // WhatsApp specific metadata
       other: {
         'product:price:amount': product.price || '',
         'product:price:currency': 'USD',
         'product:availability': product.in_stock ? 'in stock' : 'out of stock',
       },
-      
-      // Additional metadata for better SEO
       alternates: {
-        canonical: `https://your-domain.com/product/${params.id}`,
+        canonical: `https://localhost:5000/product/${params.id}`,
       },
-      
-      // Twitter card metadata
       twitter: {
         card: 'summary_large_image',
         title: product.name,
@@ -66,15 +57,15 @@ export default async function ProductPage({ params }) {
   try {
     const res = await axios.get(`http://localhost:5000/api/products/${params.id}`);
     const product = res.data;
-    
+
     return (
       <div className="container mx-auto px-4 py-8">
         <Suspense fallback={<ProductSkeleton />}>
           <ProductDetails product={product} />
         </Suspense>
-        
-        {/* JSON-LD structured data for enhanced SEO */}
-        <script 
+
+        {/* JSON-LD Structured Data */}
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -94,20 +85,20 @@ export default async function ProductPage({ params }) {
                 url: `https://your-domain.com/product/${params.id}`,
                 price: product.price || '',
                 priceCurrency: 'USD',
-                availability: product.in_stock 
-                  ? 'https://schema.org/InStock' 
+                availability: product.in_stock
+                  ? 'https://schema.org/InStock'
                   : 'https://schema.org/OutOfStock',
                 seller: {
                   '@type': 'Organization',
                   name: 'Product Shop',
-                }
+                },
               },
               aggregateRating: product.ratings && {
                 '@type': 'AggregateRating',
                 ratingValue: product.ratings.average || '4.5',
-                reviewCount: product.ratings.count || '100'
+                reviewCount: product.ratings.count || '100',
               },
-            })
+            }),
           }}
         />
       </div>
